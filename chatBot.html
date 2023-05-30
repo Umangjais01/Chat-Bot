@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>ChatBot</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body>
+  <div id="main">
+
+    <div class="header">
+      <div class="row">
+        <div class="col-7" style="text-align: left; padding-left: 8%;">
+          <h2>ChatBot</h2>
+        </div>
+        <div class="col-5">
+          <p><span style="color: #000;" id="clock"></span></p>
+        </div>
+          <!-- <h6 style="color:black">I am Jais, a sample ChatBot design by Umang Jaiswal. <span style="padding-left: 10%; color: #000;" id="clock"></span></h6> -->
+          
+    </div>
+  </div>
+    
+    <div id="msg">
+      <h4>Hello how I can help you?</h4>
+
+      <div class="row">
+
+        <div class=" col-4" style="padding: 2%;">
+          <p class="btn btn-primary" style="height: 120%;" onclick="showForm('product-form')">Know about me</p>
+        </div>
+
+        <div class="col-4" style="padding: 2%;">
+          <p class="btn btn-primary" style="height: 120%;" onclick="showForm('demo-form')">Play with me</p>
+        </div>
+
+        <div class=" col-4" style="padding: 2%;">
+          <p class="btn btn-primary" style="height: 120%;" onclick="showForm('contact-form')">Connect with us</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- product form fields -->
+    <div id="product-form" class="form">
+      <h3 style="text-align: center;">About me</h3>
+      <p style="padding: 3%;">
+        <strong>Design started:- 15-05-2023</strong>
+        <br>
+        This chat box, expertly crafted by Umang, offers a visually appealing interface, responsive design, and practical features. With attention to detail, it ensures smooth communication through clear messages and interactive buttons. A testament to Umang's skill in web development, it delivers an engaging and user-friendly experience.
+      </p>
+      <body>
+        <!-- Facebook icon -->
+      
+        <!-- Include the Font Awesome CDN -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+      </body>
+
+    </div>
+    <!-- product form end -->
+
+    <!-- demo form fields -->
+    <div id="demo-form" class="form">
+      <h3 style="text-align: center;">Lets Play</h3>
+      
+      <div id="ground"></div>
+      <div id="character"></div>
+      <div class="obstacles"></div>
+      <div class="box"> 
+        <h4>Score: <span id="score">0</span></h4>
+      </div>
+
+      <style>
+         .box {
+          width: 140px;
+          height: 60px;
+          background-color: #f0f0f0;
+          border: 1px solid #ccc;
+          margin: 0 auto;
+          display: flex;
+          justify-content: center;
+          align-items: center; 
+              
+        }
+        #ground{
+          width: 100%;
+          height: 100px;
+          background-color: green;
+          position: absolute;
+          bottom: 15%;
+        }
+        #character{
+          width: 40px;
+          height: 40px;
+          background-color: red;
+          border-radius: 50%;
+          position: absolute;
+          bottom: 29%;
+          right: calc(100%-100px);
+        }
+        .obstacle{
+          width: 30px;
+          height: 100px;
+          background-color: black;
+          position: absolute;
+          bottom: 100px;
+          right: 0;
+        }
+      </style>
+      <script>
+        let character=document.getElementById('character');
+        let characterBottom= parseInt(window.getComputedStyle(character).getPropertyValue('bottom'));
+        let characterRight = parseInt(window.getComputedStyle(character).getPropertyValue('right'));
+        let characterWidth= parseInt(window.getComputedStyle(character).getPropertyValue('width'));
+        let ground = document.getElementById('ground');
+        let groundBottom = parseInt(window.getComputedStyle(ground).getPropertyValue('bottom'));
+        let groundHeight = parseInt(window.getComputedStyle(ground).getPropertyValue('height'));
+        let isJumping = false;
+        let upTime;
+        let downTime;
+        let displayScore = document.getElementById('score');
+        let score=0;
+        function jump(){
+          if(isJumping) return;
+          upTime= setInterval(()=>{
+            if(characterBottom>=groundHeight+250){
+              clearInterval(upTime);
+              downTime=setInterval(()=>{
+                if(characterBottom<=groundHeight+120){
+                  clearInterval(downTime);
+                  isJumping=false;
+                }
+                characterBottom-=10;
+                character.style.bottom = characterBottom+'px';
+
+              },20)
+            }
+            characterBottom+=10;
+            character.style.bottom = characterBottom+'px';
+            isJumping = true;
+
+          },20);
+        }
+        function showScore(){
+          score++;
+          displayScore.innerText = score;
+        }
+        setInterval(showScore,100);
+        function generateObstacles(){
+          let obstacles=document.querySelector('.obstacles');
+          let obstacle = document.createElement('div');
+          obstacle.setAttribute('class','obstacle');
+          obstacles.appendChild(obstacle);
+
+          let randomTimeout = Math.floor(Math.random()*1000)+1000;
+          let obstacleRight = -30;
+          let obstacleBottom=200;
+          let obstacleWidth = 10;
+          let obstacleHeight= Math.floor(Math.random()*50)+50;
+          function moveObstacle(){
+            obstacleRight+=5;
+            obstacle.style.right = obstacleRight + 'px';
+            obstacle.style.bottom = obstacleBottom + 'px'; 
+            obstacle.style.width = obstacleWidth + 'px';
+            obstacle.style.height = obstacleHeight +'px';
+            // if(characterRight>=obstacleRight-characterWidth && characterRight<=obstacleRight+obstacleWidth && characterBottom<=obstacleBottom+obstacleHeight){
+            //   alert('Game Over! Your Score is: '+score);
+            //   clearInterval(obstacleInterval);
+            //   clearTimeout(obstacleTimeout);
+            //   location.reload();
+            // }
+          }
+          let obstacleInterval = setInterval(moveObstacle,25);
+          let obstacleTimeout = setTimeout(generateObstacles,1000);
+        }
+        generateObstacles();
+        function control(e){
+          if(e.key == 'ArrowUp'||e.key==' '){
+            jump();
+          }
+        }
+        document.addEventListener('keydown',control);
+      </script>
+    </div>
+    <!-- game from end -->
+
+    <!-- contact form fields -->
+    <div id="contact-form" class="form">
+      <h2 style="text-align: center;">Contact Form</h2>
+
+      <form action="" method="POST" style="padding: 2%;">
+        <div class="row">
+          <div class="form-group col-6">
+            <label for="name">Name:</label>
+            <input type="text" class="form-control" id="name" placeholder="Enter name">
+          </div>
+          <div class="form-group col-6">
+            <label for="phone">Phone number:</label>
+            <input type="tel" class="form-control" id="phone" placeholder="Enter phone number">
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-6">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" placeholder="Enter email">
+
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="message">Message:</label>
+          <textarea id="message" name="message" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+      
+      <b style="padding-left: 2%;">Contact in social media:</b>
+      <div class="row"  style="padding-left: 5%; padding-top: 3%;">
+        <div class="col-3">
+          <a href="https://www.facebook.com/umang.jaiswal.315"><i class="fab fa-facebook-square icon"></i></a>
+          <p>Facebook</p>
+          
+        </div>
+        <div class="col-3">
+          <a href="https://www.instagram.com/umang_jais01/"><i class="fab fa-instagram-square icon"></i></a>
+          <p>Instagram</p>
+        </div>
+        <div class="col-3">
+          <a href="https://www.linkedin.com/in/umang-jaiswal-097630208/"><i class="fab fa-linkedin icon"></i></a>
+          <p>LinkedIn</p>
+        </div>
+        <div class="col-3">
+          <a href="https://umangjais01.github.io/portfolio/"><i class="fas fa-user icon"></i></a>
+          <p>Portfolio</p>
+        </div>
+
+      </div>
+
+    </div>
+  
+    <!-- contact form - end -->
+
+    <div class="input">
+      <input type="text" id="msg_send" placeholder="New Message">
+      <button class="send" id="reply">Send<i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+</body>
+
+<script>
+  function init() {
+    let res_elm = document.createElement("div");
+    document.getElementById('msg').appendChild(res_elm);
+  }
+
+  document.getElementById('reply').addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    var req = document.getElementById('msg_send').value.trim();
+    var res = "";
+
+    addUserMessage(req); // Display user's message first
+
+    if (req.toLowerCase() == "hi" || req.toLowerCase() == "hello") {
+      res = "Hello, how can I help you?";
+      addBotMessage(res);
+    }
+    else if (req.toLowerCase() == "good morning") {
+      res = "Good morning, how can I assist you?"
+      addBotMessage(res);
+    }
+    else if (req.toLowerCase() == "who are you") {
+      res = "I am Annie, a chatbot created by Umang to help you."
+      addBotMessage(res);
+    }
+    else if (req.toLowerCase() == "help") {
+      res = "You can contact our team, call us at +91 9999 999 999";
+      addBotMessage(res);
+    }
+    else {
+      res = "Please enter valid query!";
+      addBotMessage(res);
+      // return;
+    }
+
+    document.getElementById('msg_send').value = "";
+  });
+
+  function addUserMessage(message) {
+    let data_req = document.createElement('div');
+    data_req.innerHTML = message;
+    data_req.setAttribute("class", "right");
+
+    let container = document.createElement('div');
+    container.setAttribute("class", "msgCon1");
+
+    let messageWindow = document.getElementById('msg');
+
+    messageWindow.appendChild(container);
+    container.appendChild(data_req);
+    scrollChatWindow();
+  }
+
+  function addBotMessage(message) {
+    let data_res = document.createElement('div');
+    data_res.innerHTML = message;
+    data_res.setAttribute("class", "left");
+
+    let container = document.createElement('div');
+    container.setAttribute("class", "msgCon2");
+
+    let messageWindow = document.getElementById('msg');
+
+    messageWindow.appendChild(container);
+    container.appendChild(data_res);
+    scrollChatWindow();
+  }
+
+  function scrollChatWindow() {
+    var scrollMsg = document.getElementById('msg')
+    scrollMsg.scrollTop = scrollMsg.scrollHeight;
+  }
+
+  function contact() {
+    // res=document.getElementById('msg');
+    // addUserMessage(req);
+    var form = document.getElementById("myForm");
+    var header = document.getElementsByTagName("h2")[0]; // get the first h2 element
+    if (form.style.display === "none") {
+      form.style.display = "block";
+      header.style.display = "none"; // hide the header
+    } else {
+      form.style.display = "none";
+    }
+  }
+  function showForm(formId) {
+    // Hide the message div
+    document.getElementById('msg').style.display = 'none';
+
+    // Show the selected form
+    document.getElementById(formId).classList.add('show');
+  }
+  function updateClock() {
+      var now = new Date();
+      var time = now.toLocaleTimeString();
+      document.getElementById('clock').textContent = time;
+    }
+
+    // Update the clock every second
+    setInterval(updateClock);
+
+</script>
+
+<style>
+  ::-webkit-scrollbar {
+    width: 0;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: grid;
+    justify-content: center;
+  }
+
+  #main {
+    margin: 0;
+    height: 100%;
+    width: 40%;
+    margin-left: 30%;
+    box-shadow: inset 0 0 10px 4px #1116;
+    position: fixed;
+  }
+
+  #msg_send {
+    outline: none;
+    font-size: 20px;
+    padding: 0 16px;
+    border-radius: 32px 0 32px 32px;
+    background: #ececee;
+    color: #333;
+    border: solid 1px #777;
+    border-right: none;
+  }
+
+  .input {
+    height: 7%;
+    background: linear-gradient(#ececee 50%, #20c997 50%);
+    display: grid;
+    grid-template-columns: 70% 30%;
+    border-radius: 32px;
+    margin: 8px;
+    min-height: 42px;
+    box-shadow: inset 0 1px 0 #777;
+    position: absolute;
+    bottom: 0;
+    width: 95%;
+  }
+
+  .send {
+    outline: none;
+    font-size: 25px;
+    border: none;
+    background: #20c997;
+    border-radius: 32px;
+    color: #eee;
+    transition-duration: 0.2s;
+  }
+
+  .send:active {
+    font-size: 14px;
+  }
+
+  .left,
+  .right {
+    font-size: 15px;
+    display: inline-block;
+    padding: 14px;
+    width: auto;
+    max-width: 60%;
+    margin: 8px 16px;
+    font-family: monospace;
+    word-wrap: break-word;
+  }
+
+  .left {
+    color: #000;
+    background: #b3bfca;
+    border-radius: 0 16px 16px 16px;
+    transition: transform 0.5s;
+    transition-duration: 0.5s;
+  }
+
+  .right {
+    float: right;
+    color: #fff;
+    background: #20c997;
+    border-radius: 16px 16px 0 16px;
+    transition: transform 0.5s;
+    transition-duration: 0.5s;
+  }
+
+  #msg {
+    overflow-y: scroll;
+    height: 80%;
+    padding: 2%;
+    scroll-behavior: smooth;
+  }
+
+  .header {
+    text-align: center;
+    background: #20c997;
+    padding: 8px;
+    font-family: sans-serif;
+    color: #fff;
+    text-shadow: 1px 1px 4px #111;
+    box-shadow: 0 4px 8px #000a;
+    margin-bottom: 8px;
+  }
+  #clock {
+      text-align: right;
+      font-size: large;
+      margin-left: auto;
+    }
+    
+  .sub-heading {
+    text-align: center;
+    background-color: #20c997;
+  }
+
+  .bot {
+    width: 50%;
+    height: 50%;
+    border-radius: 50%;
+    background: url(bot.jpg);
+    background-size: 100%;
+    margin: 10px;
+  }
+
+  .msgCon1,
+  .msgCon2 {
+    width: 100%;
+    display: inline-block;
+  }
+
+
+  .form {
+    display: none;
+    height: 83%;
+
+  }
+
+  .form.show {
+    display: block;
+  }
+
+  .left:hover {
+    background-color: #20c997;
+    color: #ececee;
+    transform: scale(1.1);
+
+  }
+
+  .right:hover {
+    background-color: #b3bfca;
+    color: #111;
+    transform: scale(1.1);
+  }
+
+  .btn-primary {
+    background-color: teal;
+    border-color: teal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+  }
+
+  #message {
+    width: 100%;
+    height: 50px;
+  }
+  .icon {
+      font-size: 60px; /* Adjust the size as desired */
+    }
+</style>
